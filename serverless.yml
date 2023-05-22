@@ -1,0 +1,49 @@
+app: serverless-elasticmq
+service: service1
+frameworkVersion: '3'
+
+package:
+  patterns:
+    - '!node_modules/**'
+  individually: true
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-common-excludes
+  - serverless-plugin-include-dependencies
+  - serverless-lift
+  - serverless-offline-sqs # this must come before serverless-offline
+  - serverless-offline
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+
+constructs:
+  myqueue:
+    type: queue
+    worker:
+      handler: src/messageConsumer.handler
+
+functions:
+  produceMessage:
+    handler: src/messageProducer.handler
+    events:
+      - httpApi:
+          method: post
+          path: /produce-message
+    environment:
+      QUEUE_URL: ${construct:myqueue.queueUrl}
+  
+custom:
+  serverless-offline-sqs:
+    queueName: myqueue
+    autoCreate: true                 # create queue if not exists
+    apiVersion: '2012-11-05'
+    endpoint: http://0.0.0.0:9324
+    region: us-east-1
+    accessKeyId: doesnt_matter
+    secretAccessKey: doesnt_matter
+    skipCacheInvalidation: false

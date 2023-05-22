@@ -1,0 +1,32 @@
+{
+  "name": "serverless-elasticmq",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.115",
+    "@types/node": "^20.2.0",
+    "serverless": "^3.31.0",
+    "serverless-lift": "^1.26.1",
+    "serverless-offline": "^12.0.4",
+    "serverless-offline-sqs": "^7.3.2",
+    "serverless-plugin-common-excludes": "^4.0.0",
+    "serverless-plugin-include-dependencies": "^5.0.0",
+    "serverless-plugin-typescript": "^2.1.4",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1379.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "serverless-offline-sqs@7.3.2": "patches/serverless-offline-sqs@7.3.2.patch"
+    }
+  }
+}
