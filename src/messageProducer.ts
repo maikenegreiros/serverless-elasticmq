@@ -3,7 +3,6 @@ import { APIGatewayEvent } from "aws-lambda";
 
 const isOffline = process.env.IS_OFFLINE === 'true'
 const offlineQueueUrl = 'http://localhost:9324/000000000000/myqueue'
-console.log({ isOffline })
 
 const options = isOffline ? {
   credentials: {
