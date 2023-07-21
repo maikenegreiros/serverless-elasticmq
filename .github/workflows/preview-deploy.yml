@@ -16,10 +16,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - name: serverless deploy -s `git rev-parse --abbrev-ref HEAD`
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+      - name: serverless deploy
         uses: serverless/github-action@v3.2
         with:
-          args: -c "serverless deploy -s `git rev-parse --abbrev-ref HEAD`"
+          args: -c "serverless deploy -s ${{ steps.extract_branch.outputs.branch }}"
           entrypoint: /bin/sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
