@@ -40,5 +40,5 @@ jobs:
           number: ${{ github.event.pull_request.number }}
           header: AWS preview link
           message: |
-            ${{ steps.serverless_deploy.outputs.endpoint }}
+            AWS URL: ${{ steps.serverless_deploy.outputs.endpoint }}
 
