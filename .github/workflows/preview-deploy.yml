@@ -29,12 +29,15 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Add AWS preview link as comment to PR
-        id: aws_preview_link_comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ github.event.pull_request.number }}
-          header: AWS preview link
-          message: |
-            ${{ steps.serverless_deploy.outputs.endpoint }}
+      - name: Show site URL for review and testing
+        run: echo ${{ steps.serverless_deploy.outputs.endpoint }}
+      # - name: Add AWS preview link as comment to PR
+      #   id: aws_preview_link_comment
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   with:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     number: ${{ github.event.pull_request.number }}
+      #     header: AWS preview link
+      #     message: |
+      #       ${{ steps.serverless_deploy.outputs.endpoint }}
+
