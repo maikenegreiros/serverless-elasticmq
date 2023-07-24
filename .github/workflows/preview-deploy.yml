@@ -1,0 +1,44 @@
+name: Deploy on PR
+
+on: [pull_request]
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+      - name: serverless deploy
+        id: serverless_deploy
+        uses: serverless/github-action@v3.2
+        with:
+          args: -c "echo endpoint=$(serverless deploy -s ${{ steps.extract_branch.outputs.branch }} | grep -E 'GET|POST|PUT|DELETE' | grep -o 'https://[^[:space:]]*/' | head -1) >> $GITHUB_OUTPUT"
+          entrypoint: /bin/sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Show site URL for review and testing
+        run: echo ${{ steps.serverless_deploy.outputs.endpoint }}
+      - name: Add AWS preview link as comment to PR
+        if: steps.serverless_deploy.outputs.endpoint
+        id: aws_preview_link_comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          header: AWS preview link
+          message: |
+            AWS URL: ${{ steps.serverless_deploy.outputs.endpoint }}
+
